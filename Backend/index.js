@@ -20,7 +20,7 @@ const router = require("./routes/user");
 //   res.end();
 // });
 
-app.use("/api/v1", router);
+app.use("/api/v1/user", router);
 
 app.listen(3000, function (err) {
   if (err) console.log(err);
