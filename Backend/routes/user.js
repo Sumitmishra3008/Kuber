@@ -1,6 +1,7 @@
 const express = require("express");
 const user = express.Router();
 const cors = require("cors");
+const asyncHandler = require("express-async-handler");
 
 const { User } = require("../db.js");
 user.use(express.json());
@@ -18,11 +19,13 @@ user.post("/register", async (req, res) => {
   try {
     const user = new User({
       Username,
-      password,
+      // password: password,
       firstname,
       lastname,
       email,
     });
+    const hashedPassword = await user.createHash(req.body.password);
+    user.password = hashedPassword;
     await user.save();
     res.status(201).json({ message: "User registered successfully" });
   } catch (err) {
