@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+require("dotenv").config();
 mongoose
   .connect(process.env.mongo_url)
   .then(() => {
@@ -12,7 +13,6 @@ const userSchema = new mongoose.Schema({
   Username: {
     type: String,
     required: [true, "Username is required"],
-    unique: [true, "Username should be unique"],
   },
   password: {
     type: String,
@@ -24,7 +24,6 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     required: [true, "Email is required"],
-    unique: true,
     match: [
       /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/,
       "Please fill a valid email address",
