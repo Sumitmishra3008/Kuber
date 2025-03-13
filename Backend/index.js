@@ -5,6 +5,7 @@ const cors = require("cors");
 app.use(cors());
 app.use(express.json());
 const { User } = require("./db.js");
+const { usersignup } = require("./type.js");
 // const user = require("./routes/user");
 
 // app.use(user);

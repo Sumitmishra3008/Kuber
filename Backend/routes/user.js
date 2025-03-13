@@ -4,6 +4,7 @@ const cors = require("cors");
 const asyncHandler = require("express-async-handler");
 
 const { User } = require("../db.js");
+const { usersignup } = require("../type.js");
 user.use(express.json());
 user.use(cors());
 
@@ -12,6 +13,11 @@ user.get("/", (req, res) => {
 });
 
 user.post("/register", async (req, res) => {
+  const reqpayload = usersignup.safeParse(req.body);
+  console.log(reqpayload);
+  if (!reqpayload.success) {
+    return res.status(411).json({ message: "invalid inputs" });
+  }
   const { Username, password, firstname, lastname, email } = req.body;
   if (!Username || !password || !firstname || !lastname || !email) {
     return res.status(422).json({ error: "Please fill all the fields" });
