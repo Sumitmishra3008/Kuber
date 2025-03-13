@@ -50,4 +50,28 @@ user.post("/register", async (req, res) => {
   }
 });
 
+user.post("/login", async (req, res) => {
+  const { Username, password } = req.body;
+  if (!Username || !password) {
+    return res.status(422).json({ error: "Please fill all the fields" });
+  }
+  try {
+    const user = await User.findOne({ Username });
+    if (!user) {
+      return res.status(404).json({ error: "Invalid username" });
+    }
+    const validPassword = await user.validatePassword(password);
+    if (!validPassword) {
+      return res.status(401).json({ error: "Invalid password" });
+    }
+    const userId = user._id;
+    const token = jwt.sign({ userId }, JWT_secret, { expiresIn: "24h" });
+    res
+      .status(200)
+      .json({ message: "User logged in successfully", token: token });
+  } catch (err) {
+    res.status(500).json({ error: "Failed to login" });
+  }
+});
+
 module.exports = user;
