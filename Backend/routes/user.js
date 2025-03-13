@@ -2,6 +2,8 @@ const express = require("express");
 const user = express.Router();
 const cors = require("cors");
 const asyncHandler = require("express-async-handler");
+const jwt = require("jsonwebtoken");
+const { JWT_secret } = require("../config.js");
 
 const { User } = require("../db.js");
 const { usersignup } = require("../type.js");
@@ -38,7 +40,11 @@ user.post("/register", async (req, res) => {
     const hashedPassword = await user.createHash(req.body.password);
     user.password = hashedPassword;
     await user.save();
-    res.status(201).json({ message: "User registered successfully" });
+    const userId = user._id;
+    const token = jwt.sign({ userId }, JWT_secret);
+    res
+      .status(201)
+      .json({ message: "User registered successfully", token: token });
   } catch (err) {
     res.status(500).json({ error: "Failed to register user" });
   }
