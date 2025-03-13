@@ -24,6 +24,11 @@ user.post("/register", async (req, res) => {
       lastname,
       email,
     });
+    const existingUser = await User.findOne({ $or: [{ email }, { Username }] });
+    if (existingUser) {
+      return res.status(400).json({ message: "User already exists" });
+    }
+
     const hashedPassword = await user.createHash(req.body.password);
     user.password = hashedPassword;
     await user.save();
