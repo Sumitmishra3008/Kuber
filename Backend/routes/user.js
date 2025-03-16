@@ -4,7 +4,7 @@ const cors = require("cors");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const { JWT_secret } = require("../config.js");
-// const { authmiddleware } = require("../middleware.js");
+const { authmiddleware } = require("../middleware.js");
 
 const { User, Account } = require("../db.js");
 const { usersignup, updateuser } = require("../type.js");
@@ -84,13 +84,14 @@ user.post("/login", async (req, res) => {
   }
 });
 
-user.put("/update", async (req, res) => {
-  const reqpayload = updateuser.safeParse(req.body); //zod validation for inputs
-  console.log(reqpayload);
-  if (!reqpayload.success) {
-    return res.status(411).json({ message: "invalid inputs" });
-  }
-  await User.updateOne(req.body, { _id: req.userId }); //updating user details
+user.put("/update", authmiddleware, async (req, res) => {
+  // const reqpayload = updateuser.safeParse(req.body); //zod validation for inputs
+  // console.log(reqpayload);
+  // if (!reqpayload.success) {
+  //   return res.status(411).json({ message: "invalid inputs" });
+  // }
+  console.log(req.userId);
+  await User.updateOne({ _id: req.userId }, req.body); //updating user details
   res.status(200).json({ message: "User updated successfully" });
 });
 
