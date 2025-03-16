@@ -5,6 +5,7 @@ const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const { JWT_secret } = require("../config.js");
 const { authmiddleware } = require("../middleware.js");
+const bcrypt = require("bcrypt");
 
 const { User, Account } = require("../db.js");
 const { usersignup, updateuser } = require("../type.js");
@@ -90,7 +91,12 @@ user.put("/update", authmiddleware, async (req, res) => {
   // if (!reqpayload.success) {
   //   return res.status(411).json({ message: "invalid inputs" });
   // }
-  console.log(req.userId);
+  // console.log(req.userId);
+  if (req.body.password) {
+    const saltRounds = 10; // Number of salt rounds for bcrypt
+    const salt = await bcrypt.genSalt(saltRounds);
+    req.body.password = await bcrypt.hash(req.body.password, salt);
+  }
   await User.updateOne({ _id: req.userId }, req.body); //updating user details
   res.status(200).json({ message: "User updated successfully" });
 });
