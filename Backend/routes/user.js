@@ -4,9 +4,10 @@ const cors = require("cors");
 const asyncHandler = require("express-async-handler");
 const jwt = require("jsonwebtoken");
 const { JWT_secret } = require("../config.js");
+// const { authmiddleware } = require("../middleware.js");
 
-const { User } = require("../db.js");
-const { usersignup } = require("../type.js");
+const { User, Account } = require("../db.js");
+const { usersignup, updateuser } = require("../type.js");
 user.use(express.json());
 user.use(cors());
 
@@ -16,7 +17,7 @@ user.get("/", (req, res) => {
 
 user.post("/register", async (req, res) => {
   const reqpayload = usersignup.safeParse(req.body); //zod validation for inputs
-  console.log(reqpayload);
+  // console.log(reqpayload);
   if (!reqpayload.success) {
     return res.status(411).json({ message: "invalid inputs" });
   }
@@ -43,12 +44,18 @@ user.post("/register", async (req, res) => {
     const hashedPassword = await user.createHash(req.body.password); //hashing the password
     user.password = hashedPassword;
     await user.save();
+
+    const balance = Math.random() * 1000; //generating random balance for user
+    const account = new Account({ userId: user._id, balance: balance });
+    console.log(account);
+    await account.save();
     const userId = user._id;
     const token = jwt.sign({ userId }, JWT_secret); //generating token
     res
       .status(201)
       .json({ message: "User registered successfully", token: token });
   } catch (err) {
+    console.log(err);
     res.status(500).json({ error: "Failed to register user" });
   }
 });
@@ -75,6 +82,16 @@ user.post("/login", async (req, res) => {
   } catch (err) {
     res.status(500).json({ error: "Failed to login" });
   }
+});
+
+user.put("/update", async (req, res) => {
+  const reqpayload = updateuser.safeParse(req.body); //zod validation for inputs
+  console.log(reqpayload);
+  if (!reqpayload.success) {
+    return res.status(411).json({ message: "invalid inputs" });
+  }
+  await User.updateOne(req.body, { _id: req.userId }); //updating user details
+  res.status(200).json({ message: "User updated successfully" });
 });
 
 module.exports = user;
