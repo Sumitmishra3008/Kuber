@@ -7,8 +7,10 @@ app.use(express.json());
 const { User } = require("./db.js");
 
 const router = require("./routes/user");
+const account = require("./routes/account");
 
 app.use("/api/v1/user", router);
+app.use("/api/v1/account", account);
 
 app.listen(3000, function (err) {
   if (err) console.log(err);

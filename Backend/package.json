@@ -17,6 +17,7 @@
     "express-async-handler": "^1.2.0",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.12.1",
+    "run-rs": "^0.7.7",
     "zod": "^3.24.2"
   }
 }
