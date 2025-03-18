@@ -12,8 +12,24 @@ const { usersignup, updateuser } = require("../type.js");
 user.use(express.json());
 user.use(cors());
 
-user.get("/", (req, res) => {
-  res.send("Hello World");
+user.get("/bulk", authmiddleware, async (req, res) => {
+  const filter = req.query.filter || "";
+  const users = await User.find({
+    $or: [
+      { firstname: { $regex: filter, $options: "i" } },
+      { lastname: { $regex: filter, $options: "i" } },
+    ],
+  });
+  res.status(200).json({
+    user: users.map((user) => {
+      return {
+        Username: user.Username,
+        firstname: user.firstname,
+        lastname: user.lastname,
+        _id: user._id,
+      };
+    }),
+  });
 });
 
 user.post("/register", async (req, res) => {
