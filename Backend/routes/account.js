@@ -29,7 +29,7 @@ account.post("/transfer", authmiddleware, async (req, res) => {
     session
   );
   if (!account) {
-    return res.status(404).json({ message: "Account not found" });
+    return res.status(404).json({ message: "Login to continue" });
   }
   if (account.balance < amount) {
     return res.status(422).json({ message: "Insufficient balance" });
